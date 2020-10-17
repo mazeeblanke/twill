@@ -196,7 +196,14 @@ class FileLibraryController extends ModuleController implements SignUploadListen
             'size' => $request->input('qqtotalfilesize'),
         ];
 
-        return $this->repository->create($fields);
+        if ($this->shouldReplaceFile($id = $request->input('media_to_replace_id'))) {
+            $file = $this->repository->whereId($id)->first();
+            $this->repository->afterDelete($file);
+            $file->update($fields);
+            return $file->fresh();
+        } else {
+            return $this->repository->create($fields);
+        }
     }
 
     /**
@@ -210,7 +217,14 @@ class FileLibraryController extends ModuleController implements SignUploadListen
             'filename' => $request->input('name'),
         ];
 
-        return $this->repository->create($fields);
+        if ($this->shouldReplaceFile($id = $request->input('media_to_replace_id'))) {
+            $file = $this->repository->whereId($id)->first();
+            $this->repository->afterDelete($file);
+            $file->update($fields);
+            return $file->fresh();
+        } else {
+            return $this->repository->create($fields);
+        }
     }
 
     /**
@@ -289,5 +303,13 @@ class FileLibraryController extends ModuleController implements SignUploadListen
     public function uploadIsNotValid()
     {
         return $this->responseFactory->json(["invalid" => true], 500);
+    }
+
+    /**
+     * @return bool
+     */
+    private function shouldReplaceFile($id)
+    {
+        return $this->repository->whereId($id)->exists();
     }
 }
