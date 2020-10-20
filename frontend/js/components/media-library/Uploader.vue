@@ -230,7 +230,6 @@
           this.media_to_replace_id = null
         }
 
-        this.media_to_replace_id = null
         this.loadingMedias.push(media)
         this.loadingProgress(media)
       },
